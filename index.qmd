@@ -1,0 +1,286 @@
+---
+format: 
+  revealjs:
+    theme: [default, custom.scss]
+    code-overflow: wrap
+    slide-number: true
+    height: 1080
+    width: 1920
+execute: 
+  eval: true
+  echo: true
+---
+
+<h1> Exploring Simplicial Complex <br> Structures in Text </h1>
+
+<h3 style = "color: black;"> Uncovering the Etymological Bones of J.R.R Tolkien's The Lord of the Rings </h3>
+
+<hr>
+
+<h3 style = "color: black;"> Andrew Disher </h3>
+
+<h4> University of Massachusetts Dartmouth </h4>
+
+<h4 style = "color: black;"> 2023-12-12 </h4>
+<br>
+
+![](https://faroutmagazine.co.uk/static/uploads/2021/09/New-composer-announced-for-The-Lord-of-the-Rings-TV-series.jpg){.absolute top=480 left=1150 width="650"}
+![](https://www.frontiersin.org/files/Articles/1248976/fncom-17-1248976-HTML/image_m/fncom-17-1248976-g002.jpg){.absolute top=580 left=450 width="650"}
+
+## What are Etymologies?
+
+> `Etymology` is the study of the origin of words and the way in which their meanings have changed throughout history. 
+
+. . .
+
+* An `etymology` is found by tracing its development since its earliest recorded occurrence in the language where it is found.
+  - It is NOT a definition; it's more like a record of all previous definitions for the word. 
+  - Words' spelling, pronunciation, and usages can all change over time.
+  - Cultures who speak a language can see their language change over time, or languages can adopt words from others. 
+ 
+. . .
+
+Tracing a word's etymology gives us a glimpse of how the word was shaped and used by speakers, and are important
+to our understanding of how different cultures and languages influenced the word. 
+
+## The Discipline of Etymology Today
+
+. . .
+
+* Etymology is a discipline in decline, and unfortunately little importance is placed on understanding where our own words come from. 
+
+. . .
+
+* J.R.R. Tolkien was a philologist, a practitioner of etymology as it relates to texts. 
+  - He knew where words came from and how their usage had changed over time.
+  - This shows in his expert usage of words in his writing. 
+
+. . . 
+
+* An example:
+  - > "Lathspell I name you, Ill-news. And ill news is an ill guest they say."
+    >
+    >    <cite> Grima's address to Gandalf <br> </cite>
+    >    <cite> The Two Towers, Book 3, Chapter 6 <br> </cite>
+    >    <cite> The king of the Golden Hall </cite>
+    
+. . .
+    
+* The word `lathspell` comes from Old English, and it's meaning is the exact opposite of the much more common word `gospel`, good-news. 
+* This is one of the more well known examples, but their are many. 
+
+## What are Simplicial Complexes?
+
+> In mathematics, a `simplicial complex` is a set composed of points, line segments, triangles, and their n-dimensional counterparts.
+
+. . .
+
+* They are a type of higher order network.
+  - Instead of simple pairwise connections (links), they describe three-way interactions, four-way, etc.
+  - Simplicial complexes allow for the use of combinatorics and algebraic topology to study higher order graphs more easily. 
+
+. . .
+
+* They are composed of `simplices`
+  - A `point` (*0*-simplex), 
+  - A `line` (*1*-simplex),
+  - A `triangle` (*2*-simplex),
+  - A `tetrahedron` (*3*-simplex),
+  - and generalized into *n*-dimensions. 
+  
+![](https://www.frontiersin.org/files/Articles/1248976/fncom-17-1248976-HTML/image_m/fncom-17-1248976-g002.jpg){.absolute top=580 left=950 width="850"}
+
+## Ok COOL... So how do the two fit together?
+
+![](https://www.askwoody.com/wp-content/uploads/2019/01/Gollum.jpg){.absolute top=200 left=460 width="1000"}
+
+## Our Simplicial Complex
+
+. . .
+
+* Imagine...
+  - our network's `nodes` are languages,
+  - our `links` connect two languages that share an influence on an English word
+  - and our `triangles` connect three languages, 
+  - and so on.
+
+. . .
+
+* This produces a structure that:
+  - describes which languages have influenced the etymologies of English words,
+  - which pairs, triads, etc. have `together` influenced English words,
+  - and how many words they have influenced. 
+  
+
+## What does this data look like?
+
+. . . 
+
+```{r}
+library(dplyr)
+
+nodes <- read.csv("data/simplex-data-1.csv")
+links <- read.csv("data/simplex-data-2.csv")
+triangles <- read.csv("data/simplex-data-3.csv")
+```
+
+```{r, echo=FALSE}
+colnames(nodes) <- c("Lang_1", "Weighted_Word_Count")
+colnames(links) <- c("Lang_1", "Lang_2", "Weighted_Word_Count")
+colnames(triangles) <- c("Lang_1", "Lang_2", "Lang_3", "Weighted_Word_Count")
+```
+
+. . . 
+
+* Nodes
+
+```{r}
+nodes %>% 
+  head()
+```
+
+. . .
+
+* Links
+
+
+```{r}
+links %>% 
+  head()
+```
+
+## What does this data look like? (cont.)
+
+* Triangles
+
+```{r}
+triangles %>% 
+  head()
+```
+
+. . .
+
+The word `cat` is influenced by `29` languages! Some combinatorics show us the number of simplex subsets this generates.
+
+. . .
+
+```{r, echo=FALSE}
+options(scipen=999)
+```
+
+```{r}
+num_simplices <- 0
+n <- 29
+
+for (k in (n - 1):1) {
+  num_simplices <- num_simplices + choose(n, k)
+}
+
+num_simplices %>% 
+  format(big.mark = ",")
+```
+
+That's a LOT. Etymolgies generate a lot of data.
+
+::: aside
+Notes: Counts are weighted by token appearance of words in text.
+:::
+
+## Visualizing the Data
+
+* Simplicial complexes of text data are
+  - High dimensional (refer to the cat example)
+  - hard to visualize
+
+* It is more useful to view only the first three dimensions of a complex. 
+* This would produce a network with nodes, links, and triangles. 
+
+. . .
+
+Unfortunately, there are very few tools available to visualize higher order network data like this.
+
+So, a custom-built visualization of this data was created using [three.js](https://threejs.org/) and a great JS library called [3d-force-graph](https://github.com/vasturiano/3d-force-graph).
+
+:::: {.columns}
+
+::: {.column width="60%"}
+<a href="https://andrewdisher.github.io/lotr-threejs-etymology-graph/">![](three-network.png){height=500}</a>
+:::
+
+::: {.column width="40%"}
+`Click the image to view the visualization!`
+
+* You can 
+  - zoom in/out, 
+  - travel to a node by clicking on it, 
+  - and hover on a node to hide any others not connected to it.
+:::
+
+::::
+
+## Simplicial Complexes in Text
+
+Simplicial complexes found in text have some interesting properties. 
+
+. . .
+
+* They are large. 
+  - LOTR had ~5,000 unique words (for which we had etymologies). 
+  - These words came from about 120 identifiable languages.
+  - Some words had only 1 or 2 language influences, some (like cat) had almost 30!
+  - My 16GiB RAM computer could not store all the simplex subsets generated from words with more than 22 languages influences. 
+  
+. . .
+
+* They tend to share similar Euler Characteristic (measure of size)
+  - Although hardware limitations prevented calculating this for the LOTR data, similar complexes from smaller texts, such as Bertrand Russel's *"The Place of Science in a Liberal Education"* and others, produced Euler characteristics of 2. This is the same as any convex polyhedron. 
+  
+## Further Applications
+
+* Simplicial complexes arise in neuroscience, study of biological networks, etc. 
+* Studying text with them yields interesting results
+  - `Shorter` text, `smaller` complex. `Increasing` length, `diminishing returns` (complexes don't get TOO much bigger)
+
+. . .
+
+* Simplicial complexes in text also *grow* as the text progresses. 
+  - Further research into how fast a simplicial complex grows from new words with new etymological roots would be insightful. 
+  - This is a dynamic simplicial complex.
+  
+. . .
+
+* Studying various authors and their works, and comparing to Tolkien's work.
+  - Are etymological roots different?
+  - Are they as varied?
+  - The English language has many words that derive from Latin, but we commonly use words derived from Germanic sources more often.
+    - Are there any authors for which this is not the case?
+    
+## A Dream
+
+* What if we created...
+  - A comprehensive higher-order network for the entire English language?
+  - This would require an exhaustive list of English words and etymologies.
+  - What about for all language?!
+  
+. . .
+  
+This would be a valid way of documenting the history of human language, which we could continuously update with time. 
+
+But...
+
+. . . 
+
+This is an impossible feat sadly, albeit one that deserves imagining!
+
+## Data Reference
+
+* Etymologies for many English words were found at [Etymonline](https://www.etymonline.com/)
+* Comprehensive list of languages scraped from [One World Nations Online](https://www.nationsonline.org/oneworld/language_code.htm)
+
+
+
+
+
+
+
+

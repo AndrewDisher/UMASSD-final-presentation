@@ -1,0 +1,18 @@
+/*-- scss:defaults --*/
+
+//$presentation-h1-font-size: 1.5em;
+//$presentation-h2-font-size: 1.3em;
+//$presentation-h3-font-size: 1em;
+//$presentation-h4-font-size: .75em;
+$presentation-heading-color: #003764;
+$presentation-title-slide-text-align: left;
+
+/*-- scss:rules --*/
+
+.subtitle {
+  font-size: 1em;
+}
+
+.quarto-title-affiliation {
+  color: #003764;
+}
