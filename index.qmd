@@ -66,8 +66,8 @@ to our understanding of how different cultures and languages influenced the word
     
 . . .
     
-* The word `lathspell` comes from Old English, and it's meaning is the exact opposite of the much more common word `gospel`, good-news. 
-* This is one of the more well known examples, but their are many. 
+* The word `lathspell` comes from Old English, and its meaning is the exact opposite of the much more common word `gospel`, good-news. 
+* This is one of the more well known examples, but there are many. 
 
 ## What are Simplicial Complexes?
 
